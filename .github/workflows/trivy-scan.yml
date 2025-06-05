@@ -15,10 +15,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Trivy container image scan
-        uses: aquasecurity/trivy-action@master
-        with:
+        run: |
+          trivy --severity=HIGH --format=json --output trivy-report.json ${{ inputs.image-ref }}
+          if [ $? -ne 0 ]; then
+            echo "High vulnerabilities found. Exiting with error."
+            exit 1
+          fi
+        env:
           image-ref: alpine/openssl
-          severity: HIGH # Уровень уязвимостей (Уже прерывает пайплайн)
-          vuln-type: os
-          ignore-unfixed: true  # Флаг для Trivy
-          fail-on-error: true  # Гарантирует, что workflow завершится с ошибкой при наличии уязвимостей
