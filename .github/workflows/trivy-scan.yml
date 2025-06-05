@@ -1,9 +1,9 @@
 name: Trivy Vulnerability Scan
 
 on:
-  workflow_dispatch:  # Ручной запуск
+  workflow_dispatch: # Ручной запуск
   schedule:
-    - cron: '0 0 * * 0'  # Еженедельный запуск ( воскресенье )
+    - cron: '0 0 * * 0' # Еженедельный запуск ( воскресенье )
 
 jobs:
   scan:
@@ -17,7 +17,8 @@ jobs:
       - name: Run Trivy container image scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: debian:10
-          severity: HIGH  # Уровень уязвимостей (Уже прерывает пайплайн)
+          image-ref: alpine/openssl
+          severity: HIGH # Уровень уязвимостей (Уже прерывает пайплайн)
           vuln-type: os
           ignore-unfixed: true  # Флаг для Trivy
+          fail-on-error: true  # Гарантирует, что workflow завершится с ошибкой при наличии уязвимостей
