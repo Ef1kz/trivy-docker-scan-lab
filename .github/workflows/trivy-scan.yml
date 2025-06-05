@@ -1,9 +1,9 @@
 name: Trivy Vulnerability Scan
 
 on:
-  workflow_dispatch: # Ручной запуск
+  workflow_dispatch:
   schedule:
-    - cron: '0 0 * * 0' # Еженедельный запуск ( воскресенье )
+    - cron: '0 0 * * 0'
 
 jobs:
   scan:
@@ -14,12 +14,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install Trivy
+        run: |
+          # Скачать последнюю версию Trivy
+          TRIVY_VERSION=$(curl -s https://api.github.com/repos/aquasecurity/trivy/releases/latest  | grep "tag_name" | cut -d\" -f4)
+          wget https://github.com/aquasecurity/trivy/releases/download/${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz 
+          tar xzf trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz
+          chmod +x trivy
+          sudo mv trivy /usr/local/bin/
+
       - name: Run Trivy container image scan
         run: |
-          trivy --severity=HIGH --format=json --output trivy-report.json ${{ inputs.image-ref }}
+          trivy --severity=HIGH --format=json --output trivy-report.json alpine/openssl
           if [ $? -ne 0 ]; then
             echo "High vulnerabilities found. Exiting with error."
             exit 1
           fi
-        env:
-          image-ref: alpine/openssl
