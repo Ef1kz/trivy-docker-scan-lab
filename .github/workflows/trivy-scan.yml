@@ -25,7 +25,7 @@ jobs:
 
       - name: Run Trivy container image scan
         run: |
-          trivy --severity=HIGH --format=json --output trivy-report.json alpine/openssl
+          trivy --severity=HIGH --format=json --output trivy-report.json debian:10
           if [ $? -ne 0 ]; then
             echo "High vulnerabilities found. Exiting with error."
             exit 1
